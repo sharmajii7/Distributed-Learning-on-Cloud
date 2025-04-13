@@ -1,0 +1,110 @@
+
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: msft_fl_ccfraud_train_in_silo
+version: 0.3.8
+display_name: CC Fraud Train (in silo)
+type: command
+description: Component to train a model to classify CC Fraud.
+is_deterministic: false
+
+distribution:
+  type: pytorch
+
+inputs:
+  train_data:
+    type: uri_folder
+    description: the input training data (preprocessed)
+  test_data:
+    type: uri_folder
+    description: the input testing data (preprocessed)
+  metrics_prefix:
+    type: string
+    description: Metrics prefix
+    default: Default-prefix
+    optional: true
+  model_name:
+    type: string
+    description: Type of the model to train
+    enum: [SimpleLSTM, SimpleVAE, SimpleLinear]
+    optional: false
+  iteration_name:
+    type: string
+    description: Iteration name
+    default: Default-iteration
+    optional: true
+  checkpoint:
+    type: uri_folder
+    description: a given pre-existing checkpoint
+    optional: true
+  lr:
+    type: number
+    description: learning rate
+    default: 1e-3
+    optional: true
+  epochs:
+    type: integer
+    description: total number of epochs for local training
+    default: 10
+    optional: true
+  batch_size:
+    type: integer
+    description: batch size
+    default: 100
+    optional: true
+  runtime_args:
+    type: string
+    description: stringified json config for a silo
+    optional: true
+  dp: # dp, dp_target_epsilon, dp_target_delta, dp_max_grad_norm, and total_num_of_iterations are defined for the only purpose of DP and can be ignored when users don't want to use Differential Privacy
+    type: boolean
+    description: differential privacy
+    default: false
+    optional: true
+  dp_target_epsilon:
+    type: number
+    description: DP target epsilon
+    default: 50.0
+    optional: true
+  dp_target_delta:
+    type: number
+    description: DP target delta
+    default: 1e-5
+    optional: true
+  dp_max_grad_norm:
+    type: number
+    description: DP max gradient norm
+    default: 1.0
+    optional: true
+  total_num_of_iterations:
+    type: integer
+    description: Total num of iterations
+    default: 1
+    optional: true
+
+outputs:
+  model:
+    type: uri_folder
+    description: the output checkpoint
+
+code: .
+
+command: >-
+  python run.py
+  --train_data ${{inputs.train_data}}
+  --test_data ${{inputs.test_data}}
+  --model_path ${{outputs.model}}
+  --model_name ${{inputs.model_name}}
+  $[[--metrics_prefix ${{inputs.metrics_prefix}}]]
+  $[[--iteration_name ${{inputs.iteration_name}}]]
+  $[[--checkpoint ${{inputs.checkpoint}}]]
+  $[[--lr ${{inputs.lr}}]]
+  $[[--epochs ${{inputs.epochs}}]]
+  $[[--batch_size ${{inputs.batch_size}}]]
+  $[[--dp ${{inputs.dp}}]] 
+  $[[--dp_target_epsilon ${{inputs.dp_target_epsilon}}]] 
+  $[[--dp_target_delta ${{inputs.dp_target_delta}}]]
+  $[[--dp_max_grad_norm ${{inputs.dp_max_grad_norm}}]]
+  $[[--total_num_of_iterations ${{inputs.total_num_of_iterations}}]]
+environment: 
+  conda_file: ./conda.yaml
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04
