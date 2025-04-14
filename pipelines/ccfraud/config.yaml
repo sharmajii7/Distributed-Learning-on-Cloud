@@ -69,7 +69,6 @@ training_parameters:
   # file for the CCFRAUD component. Options include:
   # SimpleLinear, SimpleLSTM, SimpleVAE
   model_name: SimpleLSTM
-  run_data_analysis: false
 
   # Differential privacy
   dp: false # Flag to enable/disable differential privacy
