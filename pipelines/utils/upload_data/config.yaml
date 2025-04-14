@@ -2,6 +2,9 @@
 
 # References to Azure ML workspace (use cli args to override)
 aml:
+  subscription_id: "dba9fe9b-5958-4160-b06b-ff62bf8a4c6c"
+  resource_group_name: "VCC_assignment_3"
+  workspace_name: "aml-dlvcc"
   # subscription_id: "<SUBSCRIPTION_ID>"
   # resource_group_name: "<RESOURCE_GROUP>"
   # workspace_name: "<AML_WORKSPACE_NAME>"
@@ -23,5 +26,6 @@ federated_learning:
 
 confidentiality:
   enable: false
-  keyvault: https://kv-fldemo.vault.azure.net # url of the keyvault
+  keyvault: https://ws-shkv-dlvcc.vault.azure.net/ # url of the keyvault
+  # keyvault: https://kv-fldemo.vault.azure.net # url of the keyvault
   key_name: dev-rsa-key # name of the secret containing your encryption public key
