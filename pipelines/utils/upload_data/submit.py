@@ -45,8 +45,6 @@ COMPONENTS_FOLDER = os.path.join(
     "CCFRAUD",
 )
 
-# flag for vertical jobs
-IS_VERTICAL = False
 
 ###########################
 ### CONNECT TO AZURE ML ###
@@ -114,13 +112,7 @@ def custom_fl_data_path(datastore_name, output_name, iteration_num=None):
     description=f"FL cross-silo upload data pipeline.",
 )
 def fl_cross_silo_upload_data():
-    if IS_VERTICAL:
-        silos = [
-            YAML_CONFIG.federated_learning.host,
-            *YAML_CONFIG.federated_learning.silos,
-        ]
-    else:
-        silos = YAML_CONFIG.federated_learning.silos
+    silos = YAML_CONFIG.federated_learning.silos
 
     for silo_index, silo_config in enumerate(silos):
         # create step for upload component
