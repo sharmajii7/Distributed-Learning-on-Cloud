@@ -41,7 +41,6 @@ COMPONENTS_FOLDER = os.path.join(
     "..",
     "..",
     "components",
-    "CCFRAUD",
 )
 
 

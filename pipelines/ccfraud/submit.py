@@ -81,7 +81,7 @@ YAML_CONFIG = OmegaConf.load(args.config)
 
 # path to the components
 COMPONENTS_FOLDER = os.path.join(
-    os.path.dirname(__file__), "..", "..", "components", "CCFRAUD"
+    os.path.dirname(__file__), "..", "..", "components"
 )
 
 ###########################
