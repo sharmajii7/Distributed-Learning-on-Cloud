@@ -81,12 +81,7 @@ YAML_CONFIG = OmegaConf.load(args.config)
 
 # path to the components
 COMPONENTS_FOLDER = os.path.join(
-    os.path.dirname(__file__), "..", "..", "components", "CCFRAUD"
-)
-
-# path to the shared components
-SHARED_COMPONENTS_FOLDER = os.path.join(
-    os.path.dirname(__file__), "..", "..", "components", "utils"
+    os.path.dirname(__file__), "..", "..", "components"
 )
 
 ###########################
@@ -163,17 +158,8 @@ training_component = load_component(
 )
 
 aggregate_component = load_component(
-    source=os.path.join(SHARED_COMPONENTS_FOLDER, "aggregatemodelweights", "spec.yaml")
+    source=os.path.join(COMPONENTS_FOLDER, "aggregatemodelweights", "spec.yaml")
 )
-
-if (
-    hasattr(YAML_CONFIG.training_parameters, "run_data_analysis")
-    and YAML_CONFIG.training_parameters.run_data_analysis
-):
-    data_analysis_component = load_component(
-        source=os.path.join(SHARED_COMPONENTS_FOLDER, "data_analysis", "spec.yaml")
-    )
-
 
 ########################
 ### BUILD A PIPELINE ###
@@ -220,38 +206,6 @@ pipeline_identifier = getUniqueIdentifier()
     description=f'FL cross-silo basic pipeline and the unique identifier is "{pipeline_identifier}" that can help you to track files in the storage account.',
 )
 def fl_ccfraud_basic():
-    #####################
-    ### DATA-ANALYSIS ###
-    #####################
-
-    if (
-        hasattr(YAML_CONFIG.training_parameters, "run_data_analysis")
-        and YAML_CONFIG.training_parameters.run_data_analysis
-    ):
-        for silo_index, silo_config in enumerate(YAML_CONFIG.federated_learning.silos):
-            # run the pre-processing component once
-            silo_pre_processing_step = data_analysis_component(
-                training_data=Input(
-                    type=silo_config.training_data.type,
-                    mode=silo_config.training_data.mode,
-                    path=silo_config.training_data.path + "/train.csv",
-                ),
-                testing_data=Input(
-                    type=silo_config.testing_data.type,
-                    mode=silo_config.testing_data.mode,
-                    path=silo_config.testing_data.path + f"/test.csv",
-                ),
-                metrics_prefix=silo_config.computes[0],
-                silo_index=silo_index,
-                **YAML_CONFIG.data_analysis_parameters,
-            )
-
-            # add a readable name to the step
-            silo_pre_processing_step.name = f"silo_{silo_index}_data_analysis"
-
-            # make sure the compute corresponds to the silo
-            silo_pre_processing_step.compute = silo_config.computes[0]
-
     ######################
     ### PRE-PROCESSING ###
     ######################
